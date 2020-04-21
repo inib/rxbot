@@ -40,9 +40,10 @@ def pause(x, y):
 
 def veto(x, y):
     global nowplaying, paused
-    srcontrol.songover()
-    paused = False
-    nowplaying = False
+    if not intermission:
+        srcontrol.songover()
+        paused = False
+        nowplaying = False
 
 
 # Init Hotkeys
