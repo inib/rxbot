@@ -27,6 +27,7 @@ defaultSettings = [
     ("BOT NAME", "", "Your bot's Twitch username, all lowercase."),
     ("CHANNEL", "", "Your Twitch username, all lowercase."),
     ("GPM ENABLE", "Yes", "MUST be set to 'No' if you do not plan on using RXBot's Google Play Music functionality."),
+    ("YT ENABLE", "No", "MUST be set to 'No' if you do not plan on using RXBot's Youtube functionality."),
     ("", "", ""),
     ("", "", "-------SONG REQUEST-------"),
     ("", "", ""),

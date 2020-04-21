@@ -358,12 +358,16 @@ class SRcommands:
             if returnMsg:
                 return returnMsg
 
-            # Add to queue
-            removetopqueue()
-            sqlitewrite(
-                '''INSERT INTO queue(name, song, key, time) VALUES("{user}", "{request}", "{key}", "{time}");'''.format(
-                    user=user, request=(yt.title.replace('"', "'")), key=(yt.videoid.replace('"', "'")), time=songtime))
-            return user + " >> Added: " + yt.title + " to the queue (YT). ID: " + getnewentry()
+            if settings['YT ENABLE']:
+                # Add to queue
+                removetopqueue()
+                sqlitewrite(
+                    '''INSERT INTO queue(name, song, key, time) VALUES("{user}", "{request}", "{key}", "{time}");'''.format(
+                        user=user, request=(yt.title.replace('"', "'")), key=(yt.videoid.replace('"', "'")), time=songtime))
+                return user + " >> Added: " + yt.title + " to the queue (YT). ID: " + getnewentry()
+            else:
+                return user + " >> Requests from youtube are disabled by the streamer, try !sr artist song"
+
         except:
 
             # Online

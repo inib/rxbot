@@ -5,15 +5,15 @@ from Initialize import sqlitewrite, sqliteread, settings, sqliteFetchAll, getmod
 
 commands_BotCommands = {
     "!ping": ('bot.ping', 'cmdarguments', 'user'),
-    "!uptime": ('bot.uptime', 'cmdarguments', 'user'),
-    "!roll": ('bot.roll', 'cmdarguments', 'user'),
-    "!r": ('bot.roll', 'cmdarguments', 'user'),  # Alias
+    #"!uptime": ('bot.uptime', 'cmdarguments', 'user'),
+    #"!roll": ('bot.roll', 'cmdarguments', 'user'),
+    #"!r": ('bot.roll', 'cmdarguments', 'user'),  # Alias
     "!reloaddb": ("STREAMER", 'dbCloner.manualCloneDb', 'None', 'None'),
-    "!quote": ('quotes', 'cmdarguments', 'user'),
-    "!addquote": ('quotes.addQuote', 'cmdarguments', 'user'),
-    "!removequote": ("MOD", 'quotes.rmQuote', 'cmdarguments', 'user'),
-    "!deletequote": ("MOD", 'quotes.rmQuote', 'cmdarguments', 'user'),  # Alias
-    "!test": ('getCurrentGame', 'cmdarguments', 'user'),
+    #"!quote": ('quotes', 'cmdarguments', 'user'),
+    #"!addquote": ('quotes.addQuote', 'cmdarguments', 'user'),
+    #"!removequote": ("MOD", 'quotes.rmQuote', 'cmdarguments', 'user'),
+    #"!deletequote": ("MOD", 'quotes.rmQuote', 'cmdarguments', 'user'),  # Alias
+    #"!test": ('getCurrentGame', 'cmdarguments', 'user'),
 
 }
 
