@@ -28,6 +28,7 @@ defaultSettings = [
     ("CHANNEL", "", "Your Twitch username, all lowercase."),
     ("GPM ENABLE", "Yes", "MUST be set to 'No' if you do not plan on using RXBot's Google Play Music functionality."),
     ("YT ENABLE", "No", "MUST be set to 'No' if you do not plan on using RXBot's Youtube functionality."),
+    ("INTERMISSION", "/Resources/intermission.mp3", "path to your intermission song"),
     ("", "", ""),
     ("", "", "-------SONG REQUEST-------"),
     ("", "", ""),
