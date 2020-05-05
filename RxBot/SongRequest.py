@@ -28,6 +28,9 @@ commands_SongRequest = {
     "!q": ('sr.queuelink', 'user', 'None'),  # Alias
     "!songlist": ('sr.queuelink', 'user', 'None'),  # Alias
 
+    # Showtime
+    "!showtime": ("STREAMER", 'startsong', 'None', 'None'),  # Alias
+
     # NowPlaying Control
     "!play": ("MOD", 'play', 'None', 'None'),
     "!togglepause": ("MOD", 'togglepause', 'None', 'None'),
@@ -167,7 +170,7 @@ class SRcontrol:  # Class for controlling currently playing audio
         self.songtitle = ""
         self.songkey = ""
         self.playurl = ""
-        self.cachedVol = 0
+        self.cachedVol = 85 # need variable for that
         self.isNotGPM = False
 
 
@@ -233,26 +236,56 @@ class SRcontrol:  # Class for controlling currently playing audio
 
         self.instance = vlc.Instance()
         self.p = self.instance.media_player_new(self.playurl)
+        self.p.audio_set_volume(self.cachedVol)
         self.p.play()
         saveAlbumArt(self.songkey)
         writenowplaying(True, self.songtitle)
         createsongqueue()
-        self.cachedVol = self.p.audio_get_volume()
         return True
+
+    # start intermission track at lower volume
+    def startintermission(self):
+        print("Starting intermission track")
+        try:
+            self.playurl = settings['ENABLE HOTKEYS']
+            self.instance = vlc.Instance()
+            self.p = self.instance.media_player_new("/Resources/intermission.mp3")
+            self.p.audio_set_volume(40) #add intermission volume variable to cfg
+            self.p.play()
+
+        except:
+            print("Starting intermission track failed")
+
+        return True
+
+    # stop intermission track
+    # need to add ~2 sec volume fadeout
+    def stopintermission(self):
+        print("Stopping intermission track")
+        try:
+            self.p.stop()
+        except:
+            print("Stopping intermission track failed")
+
+        return False
 
     def songover(self):
         print("Song is over!")
-        time.sleep(settings['DELAY BETWEEN SONGS'])
+        # why and why here
+        #time.sleep(settings['DELAY BETWEEN SONGS'])
         try:
             # Check if it should reset the volume to the cached volume
             if settings["YT VOL RESET"] and self.isNotGPM and (self.cachedVol != self.p.audio_get_volume()):
                 print("Reset audio to cached volume of %s." % self.cachedVol)
                 self.p.audio_set_volume(self.cachedVol)
-
+            self.cachedVol = self.p.audio_get_volume()
             self.p.stop()
             self.isNotGPM = False
+            time.sleep(settings['DELAY BETWEEN SONGS'])
+
         except AttributeError:
             print("Nothing is playing")
+
         return False
 
     def gettime(self):
@@ -306,7 +339,7 @@ class SRcontrol:  # Class for controlling currently playing audio
 
     def play(self):
         try:
-            writenowplaying(True, self.songtitle)
+            #writenowplaying(True, self.songtitle)
             self.p.set_pause(False)
             return "Resumed the music"
         except AttributeError:
@@ -314,7 +347,7 @@ class SRcontrol:  # Class for controlling currently playing audio
 
     def pause(self):
         try:
-            writenowplaying(False, "")
+            #writenowplaying(False, "")
             self.p.set_pause(True)
             return "Paused the music"
         except AttributeError:

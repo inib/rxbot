@@ -11,6 +11,7 @@ srcontrol = SRcontrol()
 
 customcmds = CustomCommands()
 nowplaying = False
+intermission = False
 paused = False
 
 
@@ -22,25 +23,27 @@ def togglepause(x, y):
 
 
 # These functions require two variables to call to avoid having way more code in the top loop.
-def play(x, y):
+def startsong(x, y):
     global nowplaying, paused
     nowplaying = True
     paused = False
+
+def play(x, y):
+    global paused
+    paused = False
     print(srcontrol.play())
 
-
 def pause(x, y):
-    global nowplaying, paused
-    nowplaying = False
+    global paused
     paused = True
     print(srcontrol.pause())
 
-
 def veto(x, y):
     global nowplaying, paused
-    srcontrol.songover()
-    paused = False
-    nowplaying = False
+    if not intermission:
+        srcontrol.songover()
+        paused = False
+        nowplaying = False
 
 
 # Init Hotkeys
@@ -122,7 +125,7 @@ def runcommand(command, cmdarguments, user, mute):
 
 
 def main():
-    global nowplaying, paused, s
+    global nowplaying, paused, intermission, s
     s = openSocket()
     joinRoom(s)
     readbuffer = ""
@@ -153,14 +156,23 @@ if not sqliteread('''SELECT id, name, song, key FROM queue ORDER BY id ASC'''):
 
 def tick():
     timecache = 0
-    global nowplaying, paused
+    global nowplaying, paused, intermission
+
+    # general rule of the great loop:
+    # if no song loaded - get one from backup playlist
+    # start with intermission until song is triggered
+    # intermission and song can be paused
+    # start intermission when song finishes or gets skipped
+
+    # need to take a look why no callbacks were used by author
+
     while True:
         time.sleep(0.2)
         # Check if there's nothing in the playlist.
         if not sqliteread('''SELECT id, name, song, key FROM queue ORDER BY id ASC'''):
             playfromplaylist()  # Move a song from the playlist into the queue.
 
-        if paused or not nowplaying:  # If for any reason the music isnt playing, change the nowplaying to nothing
+        if not nowplaying:  # If for any reason the music isnt playing, change the nowplaying to nothing
             writenowplaying(False, "")
 
         if nowplaying and not paused:  # If music IS playing:
@@ -171,12 +183,20 @@ def tick():
                 time.sleep(0.3)
                 nowplaying = srcontrol.songover()
             timecache = nptime
-
-        elif not paused and not nowplaying:  # When a song is over, start a new song
+        
+        if nowplaying and intermission:
+            intermission = srcontrol.stopintermission()
             nowplaying = srcontrol.playsong()
             timecache = 1
             getmoderators()  # Refresh the mod list so there's a "timer" for the refresh
             time.sleep(1)
+
+        elif not paused and not nowplaying:  # When a song is over, start a new song
+            if not intermission:
+                intermission = srcontrol.startintermission()
+                timecache = 1
+                getmoderators()  # Refresh the mod list so there's a "timer" for the refresh
+                time.sleep(1)
 
 
 def console():
